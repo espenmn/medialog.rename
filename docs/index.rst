@@ -1,0 +1,5 @@
+===============
+medialog.rename
+===============
+
+User documentation
