@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="medialog.rename">
+
+  -*- extra stuff goes here -*-
+
+  <browser:page
+    name="rename-view"
+    for="Products.CMFCore.interfaces.IFolderish"
+    class=".rename_view.RenameView"
+    template="rename_view.pt"
+    permission="zope2.View"
+    />
+
+
+</configure>
