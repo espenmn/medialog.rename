@@ -183,10 +183,15 @@ class Renderer(base.Renderer):
                 #new_title.replace(a, b)
                 #print(new_title)
 
+                # seem to not reindex properly
+                # Do I need to getObject?
                 item = my_image.getObject()
 
                 item.setTitle(new_title)
+                #No idea why this should be needed
                 transaction.get().commit()
+                
+                item.reindexObject(idxs=['Title'])
 
             return 'You need to rebuild catalog now.'
 
