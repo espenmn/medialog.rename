@@ -13,7 +13,7 @@
   -->
   <!--<includeDependencies package="." />-->
 
-  <include package=".browser" />
+  <!--include package=".browser" /-->
 
   <include file="permissions.zcml" />
 
@@ -44,6 +44,6 @@
 
   <include package=".portlets" />
 
-  <include package=".views" />
+  <!--include package=".views" /-->
 
 </configure>
