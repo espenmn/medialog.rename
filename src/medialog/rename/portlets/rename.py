@@ -24,6 +24,15 @@ class IRenamePortlet(IPortletDataProvider):
         required=False,
     )
 
+
+    search_depth = schema.Int(
+        title=_(u'Search depth'),
+        description=_(u'Folder levels for search'),  # NOQA: E501
+        required=True,
+        default=1
+    )
+
+
     find_str = schema.TextLine(
         title=_(u'Expression (find)'),
         description=_(u'Change (in) image names from'),  # NOQA: E501
@@ -126,12 +135,13 @@ class Renderer(base.Renderer):
         if self.data.enable:
             find = self.data.find_str
             replace = self.data.replace_str
+            search_depth = self.data.search_depth
 
             folder_path = self.folder_path()
             #folder_path = '/'.join(context.getPhysicalPath())
             folder_path = '/'.join(folder_path)
 
-            all_items = self.context.portal_catalog(portal_type='Image', path={'query': folder_path,})
+            all_items = self.context.portal_catalog(portal_type='Image', path={'query': folder_path, 'depth': search_depth})
 
             for my_image in all_items:
                 title = my_image.Title
