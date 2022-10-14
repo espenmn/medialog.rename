@@ -6,12 +6,15 @@
 medialog.rename
 ===============
 
-Tell me what your product does
+A product to rename images. 
+A Rename portlet is added and it will rename all images in subfolders 
+Use with caution. Install it when you need to rename items, remove portlets and uninstall it when you are done
+
 
 Features
 --------
 
-- Can be bullet points
+- renames images
 
 
 Examples
@@ -30,9 +33,9 @@ Full documentation for end users can be found in the "docs" folder, and is also 
 Translations
 ------------
 
-This product has been translated into
+This product has not been translated into
 
-- Klingon (thanks, K'Plai)
+- Klingon  
 
 
 Installation
@@ -62,8 +65,8 @@ Contribute
 Support
 -------
 
-If you are having issues, please let us know.
-We have a mailing list located at: project@example.com
+If you are having issues, please let me  (espenmn) know.
+
 
 
 License
