@@ -35,7 +35,8 @@ Translations
 
 This product has not been translated into
 
-- Klingon  
+- Konso
+
 
 
 Installation
