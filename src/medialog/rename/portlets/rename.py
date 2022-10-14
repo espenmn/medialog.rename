@@ -35,16 +35,29 @@ class IRenamePortlet(IPortletDataProvider):
 
     find_str = schema.TextLine(
         title=_(u'Expression (find)'),
-        description=_(u'Change (in) image names from'),  # NOQA: E501
+        description=_(u'Change (in) image names from. Regex can be written:"([0-9][0-9]) (.*)"'),  # NOQA: E501
         required=True,
         default=u'.jpg'
     )
 
-    replace_str = schema.TextLine(
+    replace_str = schema.ASCII(
         title=_(u'Expression (find)'),
-        description=_(u'Change to'),  # NOQA: E501
+        description=_(u'Change to, Regex can be written:"\2 \1"'),  # NOQA: E501
         required=True,
-        default=u''
+    )
+
+
+
+    regex = schema.Bool(
+        title=_(u'Regular Expression'),
+        description=_(u'Tick this if you use regular expressions'),
+        required=False,
+    )
+
+    move_digit = schema.Bool(
+        title=_(u'Move digit'),
+        description=_(u'Change 10a Something to Something 10a'),
+        required=False,
     )
 
     period = schema.Bool(
@@ -67,6 +80,12 @@ class IRenamePortlet(IPortletDataProvider):
         required=False,
     )
 
+    keep_enabled = schema.Bool(
+        title=_(u'Keep enabled'),
+        description=_(u'Enable this if you want the portlet functions to stay active after renaming items'),
+        required=False,
+    )
+
 @implementer(IRenamePortlet)
 class Assignment(base.Assignment):
     schema = IRenamePortlet
@@ -78,6 +97,11 @@ class Assignment(base.Assignment):
     @property
     def title(self):
         return _(u'Replace Portlet')
+
+    #@property
+    #def turnoff(self):
+    #    self.data.enable = False
+    #    return 'Portlet is disabled'
 
 
 class AddForm(base.AddForm):
@@ -117,22 +141,15 @@ class Renderer(base.Renderer):
     def render(self):
         return self._template()
 
-    #@property
-    #def replace(self):
-    #    """Show the portlet only if there are one or more elements and
-    #    not an anonymous user."""
-    #    return not self.anonymous and self.data()
-
-
-    #def find_str(self):
-    #    """Show the find string"""
-    #    return self.data.find_str
-
-
+    def turnoff(self):
+        self.data.enable = False
+        return 'Portlet is disabled'
 
     def rename(self):
 
         if self.data.enable:
+            #Turn off search, we need to be sure we dont replac too much
+            #self.data.enable = False
             find = self.data.find_str
             replace = self.data.replace_str
             search_depth = self.data.search_depth
@@ -145,8 +162,18 @@ class Renderer(base.Renderer):
 
             for my_image in all_items:
                 title = my_image.Title
-                #print(title)
-                new_title = title.replace(find, replace)
+                new_title = title
+
+
+                if self.data.regex:
+
+                    #re.sub(r"([0-9][0-9])\ (.*)", r"\2 \1", "10 Imagename")
+                    #from_regex = r"" + re.escape(find)
+                    #to_regex   = re.escape(replace)
+                    #import pdb; pdb.set_trace()
+                    new_title = re.sub(find, replace, title)
+                else:
+                    new_title = title.replace(find, replace)
 
                 if self.data.period:
                     new_title = new_title.replace('.', ' ')
@@ -162,11 +189,12 @@ class Renderer(base.Renderer):
                 #import pdb; pdb.set_trace()
 
                 if (title_len > 1):
-                    first_word = new_title.split(" ")[0];
-                    last_part = new_title.split(" ")[1:]
-                    if first_word[0].isdigit():
-                        ##obs need to add spaces
-                        new_title = ' '.join(last_part) + " " + first_word
+                    if self.data.move_digit:
+                        first_word = new_title.split(" ")[0];
+                        last_part = new_title.split(" ")[1:]
+                        if first_word[0].isdigit():
+                            ##obs need to add spaces
+                            new_title = ' '.join(last_part) + " " + first_word
 
                     # take year from title and add it to field 'year'
                     if self.data.yeer:
@@ -190,9 +218,16 @@ class Renderer(base.Renderer):
                 item.setTitle(new_title)
                 #No idea why this should be needed
                 transaction.get().commit()
-                
+
                 item.reindexObject(idxs=['Title'])
 
-            return 'You need to rebuild catalog now.'
+            if not self.data.keep_enabled:
+                self.data.enable = False
+                self.turnoff()
 
-        return 'Portlet is disabled'
+                return 'Changes done. Portlet is disabled'
+
+        if not self.data.enable:
+            return 'Portlet is disabled'
+        else:
+            return 'Portlet funcions are ACTIVE'
