@@ -42,7 +42,7 @@ class IRenamePortlet(IPortletDataProvider):
 
     replace_str = schema.ASCII(
         title=_(u'Expression (find)'),
-        description=_(u'Change to, Regex can be written:"\2 \1"'),  # NOQA: E501
+        description=_(u'Change to, Regex can be written:"\\2 \\1"'),  # NOQA: E501
         required=True,
     )
 
@@ -197,16 +197,21 @@ class Renderer(base.Renderer):
                             new_title = ' '.join(last_part) + " " + first_word
 
                     # take year from title and add it to field 'year'
-                    if self.data.yeer:
-                        for word in last_part:
+                    try:
+                        if self.data.yeer:
+
+                            for word in last_part:
+                                print(word)
+                                if len(word) > 4:
+                                    if word[0] == "(" and word[-1] == ")":
+                                        print('will split')
+                                        word = word[1:-1]
                             print(word)
-                            if word[0] == "(" and word[-1] == ")":
-                                print('will split')
-                                word = word[1:-1]
-                        print(word)
-                        if word.isdigit():
-                            if int(word) > 1700 and int(word) < 2040:
-                                item.year = int(word)
+                            if word.isdigit():
+                                if int(word) > 1700 and int(word) < 2040:
+                                    item.year = int(word)
+                    finally:
+                        print('nothing')
 
                 #new_title.replace(a, b)
                 #print(new_title)
